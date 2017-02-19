@@ -7,13 +7,18 @@ import enkan.component.doma2.DomaProvider;
 import enkan.data.Flash;
 import enkan.data.HttpResponse;
 import kotowari.component.TemplateEngine;
+import net.unit8.sigcolle.auth.LoginUserPrincipal;
 import net.unit8.sigcolle.dao.CampaignDao;
 import net.unit8.sigcolle.dao.SignatureDao;
 import net.unit8.sigcolle.form.CampaignForm;
 import net.unit8.sigcolle.form.SignatureForm;
 import net.unit8.sigcolle.model.UserCampaign;
 import net.unit8.sigcolle.model.Signature;
+import net.unit8.sigcolle.model.Campaign;
+import net.unit8.sigcolle.form.NewCampaignForm;
 
+import java.nio.file.attribute.UserPrincipal;
+import enkan.data.Session;
 import static enkan.util.BeanBuilder.builder;
 import static enkan.util.HttpResponseUtils.RedirectStatusCode.SEE_OTHER;
 import static enkan.util.HttpResponseUtils.redirect;
@@ -30,14 +35,14 @@ public class CampaignController {
     private DomaProvider domaProvider;
 
     private HttpResponse showCampaign(Long campaignId, SignatureForm signature, String message) {
-        CampaignDao campaignDao = domaProvider.getDao(CampaignDao.class);
-        UserCampaign campaign = campaignDao.selectById(campaignId);
+        CampaignDao campaignDao = domaProvider.getDao(CampaignDao.class);//データをとってくるA　Aのニックネーム
+        UserCampaign campaign = campaignDao.selectById(campaignId);//データベースのID番号を選んでくる(番号1)
 
         SignatureDao signatureDao = domaProvider.getDao(SignatureDao.class);
-        int signatureCount = signatureDao.countByCampaignId(campaignId);
+        int signatureCount = signatureDao.countByCampaignId(campaignId);//署名自体をとってくる
 
         return templateEngine.render("campaign",
-                "campaign", campaign,
+                "campaign", campaign,//htmlファイルと同じ名前
                 "signatureCount", signatureCount,
                 "signature", signature,
                 "message", message
@@ -57,9 +62,7 @@ public class CampaignController {
                     .build();
         }
 
-        return showCampaign(form.getCampaignIdLong(),
-                new SignatureForm(),
-                (String) some(flash, Flash::getValue).orElse(null));
+        return showCampaign(form.getCampaignIdLong(),new SignatureForm(),(String)some(flash, Flash::getValue).orElse( null));
     }
 
     /**
@@ -97,7 +100,27 @@ public class CampaignController {
      * 新規キャンペーン作成処理.
      * @return HttpResponse
      */
-    public HttpResponse create() {
+    public HttpResponse create(NewCampaignForm form, Session session) {//session情報を使いますと宣言
+        if (form.hasErrors()){
+            return templateEngine.render("signature/new");
+        }
+
+        LoginUserPrincipal userPrincipal =  (LoginUserPrincipal) session.get("principal");//LoginUserPrincipalの型にキャスト session からIdを取るための作業
+
+        Long userId = userPrincipal.getUserId();
+
+        CampaignDao campaignDao = domaProvider.getDao(CampaignDao.class);
+        //if(CampaignDao.countByCampaignId(form.getCampaignId()) != 0){}//重複チェックはいらないキャンペーン機械が決めてくれている　自動生成してくれている
+        Campaign campaign = builder(new Campaign())
+            //.set(Campaign::setCampaignId, form.getCampaignId()) CampaignFormに書かれている
+                .set(Campaign::setTitle, form.getTitle())//formのtitle
+                .set(Campaign::setStatement, form.getStatement())
+                .set(Campaign::setGoal, form.getGoal())
+                .set(Campaign::setCreateUserId, userId)//userIdをCreateUserIdにセットする
+               // .set(Campaign::setCreateUserId, form.getCreateUserId())
+            .build();
+        campaignDao.insert(campaign);
+
         // TODO: create campaign
         return builder(redirect("/", SEE_OTHER)).build();
     }

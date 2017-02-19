@@ -18,7 +18,9 @@
                     <div class="center column">
                         <h1 class="ui center aligned header">キャンペーン作成</h1>
                         <form class="ui form" method="post" action="/auth/campaign">
-                            <div class="field"><label>タイトル</label><input type="text"></div>
+                            <div class="field"><label>タイトル</label><input type="text" name = "title"></div>
+                            <dir class="field"><label>説明文</label><input type="text" name = "statement"></dir>
+                            <dir class="field"><label>目標人数</label><input type="text" name = "goal"></dir>
                             <button type="submit" class="ui primary button">作成</button>
                         </form>
                     </div>

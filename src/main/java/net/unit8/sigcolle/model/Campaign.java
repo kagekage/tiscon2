@@ -15,7 +15,7 @@ import org.seasar.doma.Id;
 @Data
 public class Campaign implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)//campaignIdをデフォルトで入れてくれる
     private Long campaignId;
 
     private String title;

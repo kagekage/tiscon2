@@ -64,7 +64,7 @@ public class SigColleApplicationFactory implements ApplicationFactory {
         Routes routes = Routes.define(r -> {
             // public
             r.get("/").to(IndexController.class, "index");
-            r.get("/campaign/:campaignId").to(CampaignController.class, "index");
+            r.get("/campaign/:campaignId").to(CampaignController.class, "index");//compaign１へのアクセスし
             r.post("/campaign/:campaignId").to(CampaignController.class, "sign");
             r.get("/campaign/:campaignId/signatures").to(SignatureController.class, "list");
             r.get("/register").to(RegisterController.class, "index");
@@ -75,6 +75,7 @@ public class SigColleApplicationFactory implements ApplicationFactory {
             // authenticated(see middleware configuration)
             r.get("/auth/campaign").to(CampaignController.class, "createForm");
             r.post("/auth/campaign").to(CampaignController.class, "create");
+           // r.get("/create").to(CampaignController.class,"createForm");//createするために定義
         }).compile();
 
         app.use(new DefaultCharsetMiddleware());

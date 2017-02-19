@@ -2,8 +2,12 @@ package net.unit8.sigcolle.form;
 
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotNull;
 
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
+
+import java.util.List;
 
 /**
  * @author kawasima
@@ -16,5 +20,6 @@ public class CampaignForm extends FormBase {
 
     public Long getCampaignIdLong() {
         return Long.parseLong(campaignId);
-    }
+    }//キャストしているString型からint型
+
 }

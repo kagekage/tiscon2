@@ -22,3 +22,4 @@ public class V1__CreateUser implements JdbcMigration {
         }
     }
 }
+//Primary key 重複しない数字などID

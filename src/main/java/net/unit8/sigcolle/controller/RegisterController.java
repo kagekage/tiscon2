@@ -46,7 +46,7 @@ public class RegisterController {
     public HttpResponse register(RegisterForm form) {
 
         if (form.hasErrors()) {
-            return templateEngine.render("register", "user", form);
+            return templateEngine.render("register", "user", form);//registerのuserという情報を持ってくる
         }
 
         UserDao userDao = domaProvider.getDao(UserDao.class);
@@ -70,7 +70,7 @@ public class RegisterController {
         Session session = new Session();
         User loginUser = userDao.selectByEmail(form.getEmail());
         session.put(
-                "principal",
+                "principal",//個々を識別するためのもの
                 new LoginUserPrincipal(loginUser.getUserId(), loginUser.getLastName() + " " + loginUser.getFirstName())
         );
 
